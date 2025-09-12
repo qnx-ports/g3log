@@ -16,7 +16,9 @@
 #endif
 
 #include <cxxabi.h>
+#if (!defined(__QNX__))
 #include <execinfo.h>
+#endif
 #include <unistd.h>
 #include <atomic>
 #include <csignal>
@@ -77,7 +79,13 @@ namespace {
          fatal_stream << "Received fatal signal: " << fatal_reason;
          fatal_stream << "(" << signal_number << ")\tPID: " << getpid() << std::endl;
          fatal_stream << "\n***** SIGNAL " << fatal_reason << "(signo= " << signal_number << " si_errno= " << info->si_errno << " si_code = " << info->si_code << ")" << std::endl;
+		 
+		 #if (defined(__QNX__))
+         LogCapture trigger(FATAL_SIGNAL, static_cast<g3::SignalType>(signal_number));
+		 #else
          LogCapture trigger(FATAL_SIGNAL, static_cast<g3::SignalType>(signal_number), dump.c_str());
+		 #endif
+		 
          trigger.stream() << fatal_stream.str();
       }  // message sent to g3LogWorker
       // wait to die
@@ -134,6 +142,13 @@ namespace g3 {
       /// Generate stackdump. Or in case a stackdump was pre-generated and non-empty just use that one
       /// i.e. the latter case is only for Windows and test purposes
       std::string stackdump(const char* rawdump) {
+	  
+	      #if (defined(__QNX__))
+          if (nullptr != rawdump && !std::string(rawdump).empty()) {
+            return {rawdump};
+           }
+		   return {}; // safe fallback
+		 #else		 
          if (nullptr != rawdump && !std::string(rawdump).empty()) {
             return {rawdump};
          }
@@ -187,6 +202,7 @@ namespace g3 {
          }  // END: for(size_t idx = 1; idx < size && messages != nullptr; ++idx)
          free(messages);
          return oss.str();
+		  #endif
       }
 
       /// string representation of signal ID

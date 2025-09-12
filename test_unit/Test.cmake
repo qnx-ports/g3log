@@ -40,11 +40,9 @@ enable_testing()
         SET(OS_SPECIFIC_TEST test_crashhandler_windows)
      ENDIF(MSVC OR MINGW)
 
-         IF(QNX)
-           SET(tests_to_run test_message test_filechange test_io test_fatal test_cpp_future_concepts test_concept_sink test_sink ${OS_SPECIFIC_TEST})
-         ELSE()
-           SET(tests_to_run test_message test_filechange test_io test_fatal test_signal test_cpp_future_concepts test_concept_sink test_sink ${OS_SPECIFIC_TEST})
-         ENDIF()
+       
+     SET(tests_to_run test_message test_filechange test_io test_fatal test_signal test_cpp_future_concepts test_concept_sink test_sink ${OS_SPECIFIC_TEST})
+      
 
       SET(helper ${DIR_UNIT_TEST}/testing_helpers.h ${DIR_UNIT_TEST}/testing_helpers.cpp)
       include_directories(${DIR_UNIT_TEST})
@@ -82,7 +80,7 @@ enable_testing()
     #
     # Test for Linux, runtime loading of dynamic libraries
     #     
-    IF (NOT WIN32 AND NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang") AND G3_SHARED_LIB AND NOT QNX_PLATFORM)
+    IF (NOT WIN32 AND NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang") AND G3_SHARED_LIB AND NOT QNX)
        add_library(tester_sharedlib SHARED ${DIR_UNIT_TEST}/tester_sharedlib.h ${DIR_UNIT_TEST}/tester_sharedlib.cpp)
        target_link_libraries(tester_sharedlib ${G3LOG_LIBRARY})
 
