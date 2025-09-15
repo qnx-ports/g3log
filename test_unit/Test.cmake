@@ -53,24 +53,20 @@
                   "${gmock_SOURCE_DIR}/include")
       endif()
     endif()
-
       enable_testing()
 
-
       set(DIR_UNIT_TEST ${g3log_SOURCE_DIR}/test_unit)
-      message( STATUS "-DADD_G3LOG_UNIT_TEST=ON" )  
+      message( STATUS "-DADD_G3LOG_UNIT_TEST=ON" )
 
      # obs see this: http://stackoverflow.com/questions/9589192/how-do-i-change-the-number-of-template-arguments-supported-by-msvcs-stdtupl
      # and this: http://stackoverflow.com/questions/2257464/google-test-and-visual-studio-2010-rc
+  
 
      IF (MSVC OR MINGW)  
         SET(OS_SPECIFIC_TEST test_crashhandler_windows)
      ENDIF(MSVC OR MINGW)
 
-       
      SET(tests_to_run test_message test_filechange test_io test_fatal test_signal test_cpp_future_concepts test_concept_sink test_sink ${OS_SPECIFIC_TEST})
-      
-
       SET(helper ${DIR_UNIT_TEST}/testing_helpers.h ${DIR_UNIT_TEST}/testing_helpers.cpp)
       include_directories(${DIR_UNIT_TEST})
 
@@ -84,12 +80,12 @@
 
         set_target_properties(${test} PROPERTIES COMPILE_DEFINITIONS "GTEST_HAS_TR1_TUPLE=0")
         set_target_properties(${test} PROPERTIES COMPILE_DEFINITIONS "GTEST_HAS_RTTI=0")
-        if(NOT (MSVC) AND NOT (QNX))
+        IF(NOT (MSVC) AND NOT (QNX))
            set_target_properties(${test} PROPERTIES COMPILE_FLAGS "-isystem -pthread ")
-        ENDIF()
+        ENDIF(NOT (MSVC) AND NOT (QNX))
 
        # Link g3log, gtest_main, and regex for QNX
-      if(QNX)
+      IF(QNX)
        target_link_libraries(${test}
         PRIVATE
         g3log
@@ -109,10 +105,11 @@
     IF (NOT WIN32 AND NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang") AND G3_SHARED_LIB AND NOT QNX)
        add_library(tester_sharedlib SHARED ${DIR_UNIT_TEST}/tester_sharedlib.h ${DIR_UNIT_TEST}/tester_sharedlib.cpp)
        target_link_libraries(tester_sharedlib ${G3LOG_LIBRARY})
+
        add_executable(test_dynamic_loaded_shared_lib ${g3log_SOURCE_DIR}/test_main/test_main.cpp ${DIR_UNIT_TEST}/test_linux_dynamic_loaded_sharedlib.cpp)
        set_target_properties(test_dynamic_loaded_shared_lib PROPERTIES COMPILE_DEFINITIONS "GTEST_HAS_TR1_TUPLE=0")
        set_target_properties(test_dynamic_loaded_shared_lib PROPERTIES COMPILE_DEFINITIONS "GTEST_HAS_RTTI=0")
-       target_link_libraries(test_dynamic_loaded_shared_lib  ${G3LOG_LIBRARY} -ldl gtest_main) 
+       target_link_libraries(test_dynamic_loaded_shared_lib  ${G3LOG_LIBRARY} -ldl gtest_main)
     ENDIF()
 ELSE() 
   message( STATUS "-DADD_G3LOG_UNIT_TEST=OFF" ) 
