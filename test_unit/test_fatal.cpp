@@ -64,7 +64,7 @@ TEST(LogTest, FatalSIGTERM__UsingDefaultHandler) {
    EXPECT_EQ(g_fatal_counter.load(), size_t{1});
 }
 
-#if !(defined(WIN32) || defined(_WIN32) || defined(__WIN32__) )
+#if !(defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
 namespace {
    std::atomic<size_t> customFatalCounter = {0};
    std::atomic<int> lastEncounteredSignal = {0};

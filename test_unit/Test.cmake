@@ -23,11 +23,38 @@
    # 4. create the unit tests for g3log --- ONLY TESTED THE UNIT TEST ON LINUX
    # =========================
    IF (ADD_G3LOG_UNIT_TEST)
+   	if(QNX)
+    		set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+	else()
+      
+      # Download and unpack googletest at configure time
+      configure_file(CMakeLists.txt.in
+            googletest-download/CMakeLists.txt)
+      execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
+      execute_process(COMMAND ${CMAKE_COMMAND} --build .
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
 
-# Prevent GoogleTest from overriding our compiler/linker options
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+      # Prevent GoogleTest from overriding our compiler/linker options
+      # when building with Visual Studio
+      set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-enable_testing()
+      # Add googletest directly to our build. This adds
+      # the following targets: gtest, gtest_main, gmock
+      # and gmock_main
+      add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
+            ${CMAKE_BINARY_DIR}/googletest-build)
+
+      # The gtest/gmock targets carry header search path
+      # dependencies automatically when using CMake 2.8.11 or
+      # later. Otherwise we have to add them here ourselves.
+      if (CMAKE_VERSION VERSION_LESS 2.8.11)
+         include_directories("${gtest_SOURCE_DIR}/include"
+                  "${gmock_SOURCE_DIR}/include")
+      endif()
+      endif()
+
+      enable_testing()
 
 
       set(DIR_UNIT_TEST ${g3log_SOURCE_DIR}/test_unit)
@@ -57,7 +84,7 @@ enable_testing()
 
         set_target_properties(${test} PROPERTIES COMPILE_DEFINITIONS "GTEST_HAS_TR1_TUPLE=0")
         set_target_properties(${test} PROPERTIES COMPILE_DEFINITIONS "GTEST_HAS_RTTI=0")
-        if(NOT MSVC AND NOT CMAKE_SYSTEM_NAME STREQUAL "QNX")
+        if(NOT (MSVC) AND NOT (QNX))
            set_target_properties(${test} PROPERTIES COMPILE_FLAGS "-isystem -pthread ")
         ENDIF()
 

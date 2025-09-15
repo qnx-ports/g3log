@@ -17,18 +17,11 @@ file(GLOB HEADER_FILES ${LOG_SRC}/g3log/*.hpp)
 list( APPEND HEADER_FILES ${GENERATED_G3_DEFINITIONS} )
 list( APPEND SRC_FILES ${GENERATED_G3_DEFINITIONS} )
 
-if (MSVC OR MINGW)
-    list(REMOVE_ITEM SRC_FILES
-        ${LOG_SRC}/crashhandler_unix.cpp
-    )
-else()
-    list(REMOVE_ITEM SRC_FILES
-        ${LOG_SRC}/crashhandler_windows.cpp
-        ${LOG_SRC}/stacktrace_windows.cpp
-        ${LOG_SRC}/g3log/stacktrace_windows.hpp
-    )
-endif()
-
+IF (MSVC OR MINGW)
+   list(REMOVE_ITEM SRC_FILES  ${LOG_SRC}/crashhandler_unix.cpp)
+ELSE()
+   list(REMOVE_ITEM SRC_FILES  ${LOG_SRC}/crashhandler_windows.cpp ${LOG_SRC}/g3log/stacktrace_windows.hpp ${LOG_SRC}/stacktrace_windows.cpp)
+ENDIF (MSVC OR MINGW)
 
 set(SRC_FILES ${SRC_FILES} ${SRC_PLATFORM_SPECIFIC})
 
@@ -106,7 +99,7 @@ SET(ACTIVE_CPP0xx_DIR "Release")
 
 # find corresponding thread lib (e.g. whether -lpthread is needed or not)
 FIND_PACKAGE(Threads REQUIRED)
-if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
+if(QNX)
     target_compile_definitions(${G3LOG_LIBRARY} PRIVATE _REENTRANT)
 else()
     TARGET_LINK_LIBRARIES(${G3LOG_LIBRARY} Threads::Threads )
