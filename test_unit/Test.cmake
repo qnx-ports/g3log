@@ -25,7 +25,7 @@
    IF (ADD_G3LOG_UNIT_TEST)
    	if(QNX)
     		set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-	else()
+	  else()
       
       # Download and unpack googletest at configure time
       configure_file(CMakeLists.txt.in
@@ -52,7 +52,7 @@
          include_directories("${gtest_SOURCE_DIR}/include"
                   "${gmock_SOURCE_DIR}/include")
       endif()
-      endif()
+    endif()
 
       enable_testing()
 
@@ -93,7 +93,6 @@
        target_link_libraries(${test}
         PRIVATE
         g3log
-        regex
         gtest
         gtest_main
         )
@@ -110,12 +109,10 @@
     IF (NOT WIN32 AND NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang") AND G3_SHARED_LIB AND NOT QNX)
        add_library(tester_sharedlib SHARED ${DIR_UNIT_TEST}/tester_sharedlib.h ${DIR_UNIT_TEST}/tester_sharedlib.cpp)
        target_link_libraries(tester_sharedlib ${G3LOG_LIBRARY})
-
        add_executable(test_dynamic_loaded_shared_lib ${g3log_SOURCE_DIR}/test_main/test_main.cpp ${DIR_UNIT_TEST}/test_linux_dynamic_loaded_sharedlib.cpp)
        set_target_properties(test_dynamic_loaded_shared_lib PROPERTIES COMPILE_DEFINITIONS "GTEST_HAS_TR1_TUPLE=0")
        set_target_properties(test_dynamic_loaded_shared_lib PROPERTIES COMPILE_DEFINITIONS "GTEST_HAS_RTTI=0")
        target_link_libraries(test_dynamic_loaded_shared_lib  ${G3LOG_LIBRARY} -ldl gtest_main) 
-
     ENDIF()
 ELSE() 
   message( STATUS "-DADD_G3LOG_UNIT_TEST=OFF" ) 

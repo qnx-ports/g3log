@@ -80,13 +80,13 @@ namespace {
          fatal_stream << "(" << signal_number << ")\tPID: " << getpid() << std::endl;
          fatal_stream << "\n***** SIGNAL " << fatal_reason << "(signo= " << signal_number << " si_errno= " << info->si_errno << " si_code = " << info->si_code << ")" << std::endl;
 		 
-		 #if (defined(__QNX__))
+#if (defined(__QNX__))
          LogCapture trigger(FATAL_SIGNAL, static_cast<g3::SignalType>(signal_number));
-		 #else
+#else
          LogCapture trigger(FATAL_SIGNAL, static_cast<g3::SignalType>(signal_number), dump.c_str());
-		 #endif
-		 
-         trigger.stream() << fatal_stream.str();
+#endif
+
+      trigger.stream() << fatal_stream.str();
       }  // message sent to g3LogWorker
       // wait to die
    }
@@ -143,12 +143,12 @@ namespace g3 {
       /// i.e. the latter case is only for Windows and test purposes
       std::string stackdump(const char* rawdump) {
 	  
-	      #if (defined(__QNX__))
+#if (defined(__QNX__))
           if (nullptr != rawdump && !std::string(rawdump).empty()) {
             return {rawdump};
            }
 		   return {}; // safe fallback
-		 #else		 
+#else		 
          if (nullptr != rawdump && !std::string(rawdump).empty()) {
             return {rawdump};
          }
@@ -202,7 +202,7 @@ namespace g3 {
          }  // END: for(size_t idx = 1; idx < size && messages != nullptr; ++idx)
          free(messages);
          return oss.str();
-		  #endif
+#endif
       }
 
       /// string representation of signal ID
