@@ -16,7 +16,7 @@
 #endif
 
 #include <cxxabi.h>
-#if (!defined(__QNX__))
+#if !defined(__QNX__)
 #include <execinfo.h>
 #endif
 #include <unistd.h>
@@ -79,8 +79,7 @@ namespace {
          fatal_stream << "Received fatal signal: " << fatal_reason;
          fatal_stream << "(" << signal_number << ")\tPID: " << getpid() << std::endl;
          fatal_stream << "\n***** SIGNAL " << fatal_reason << "(signo= " << signal_number << " si_errno= " << info->si_errno << " si_code = " << info->si_code << ")" << std::endl;
-		 
-#if (defined(__QNX__))
+#if defined(__QNX__)
          LogCapture trigger(FATAL_SIGNAL, static_cast<g3::SignalType>(signal_number));
 #else
          LogCapture trigger(FATAL_SIGNAL, static_cast<g3::SignalType>(signal_number), dump.c_str());
@@ -141,16 +140,12 @@ namespace g3 {
       /// Generate stackdump. Or in case a stackdump was pre-generated and non-empty just use that one
       /// i.e. the latter case is only for Windows and test purposes
       std::string stackdump(const char* rawdump) {
-	  
-#if (defined(__QNX__))
-          if (nullptr != rawdump && !std::string(rawdump).empty()) {
-            return {rawdump};
-           }
-		   return {}; // safe fallback
-#else		 
          if (nullptr != rawdump && !std::string(rawdump).empty()) {
             return {rawdump};
          }
+#if defined(__QNX__) // backtrace() and backtrace_symbols() are unavailable on QNX systems
+         return "";
+#else
          const size_t max_dump_size = 50;
          void* dump[max_dump_size];
          const size_t size = backtrace(dump, max_dump_size);

@@ -99,15 +99,11 @@ SET(ACTIVE_CPP0xx_DIR "Release")
 
 # find corresponding thread lib (e.g. whether -lpthread is needed or not)
 FIND_PACKAGE(Threads REQUIRED)
-if(QNX)
-    target_compile_definitions(${G3LOG_LIBRARY} PRIVATE _REENTRANT)
-else()
-    TARGET_LINK_LIBRARIES(${G3LOG_LIBRARY} Threads::Threads )
-endif()
+TARGET_LINK_LIBRARIES(${G3LOG_LIBRARY} Threads::Threads )
 
 
 # check for backtrace and cxa_demangle only in non-Windows dev environments
-IF(NOT(MSVC OR MINGW OR QNX ))
+IF(NOT(MSVC OR MINGW OR QNX))
 	# the backtrace module does not provide a modern cmake target
 	FIND_PACKAGE(Backtrace REQUIRED)
 	if(Backtrace_FOUND)
