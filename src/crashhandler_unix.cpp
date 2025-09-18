@@ -85,8 +85,7 @@ namespace {
 #else
          LogCapture trigger(FATAL_SIGNAL, static_cast<g3::SignalType>(signal_number), dump.c_str());
 #endif
-
-      trigger.stream() << fatal_stream.str();
+         trigger.stream() << fatal_stream.str();
       }  // message sent to g3LogWorker
       // wait to die
    }
